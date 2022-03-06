@@ -22,9 +22,26 @@ func GetStructTag() string {
 
 
 /* never forget to use a pointer as prm*/
+/*func FillAnyStructFromMap(u interface{}, j map[string]interface{}) {
+
+    s := reflect.ValueOf(u).Elem()
+	typeV := s.Type()
+
+	for i := 0; i < typeV.NumField(); i++ {
+
+		fieldname := typeV.Field(i).Name //struct_tag is per default http
+
+        if jvalue, ok := j[fieldname]; ok {
+            field := s.Field(i)
+            field.SetValue(reflect.ValueOf(jvalue))
+        }
+  }
+}*/
+
+/* never forget to use a pointer as prm*/
 func FillInterfaceFromRequest(u interface{}, r *http.Request, ignore map[string]int) {
 
-  s := reflect.ValueOf(u).Elem()
+    s := reflect.ValueOf(u).Elem()
 	typeV := s.Type()
 
 	ignored_all := false
@@ -34,7 +51,7 @@ func FillInterfaceFromRequest(u interface{}, r *http.Request, ignore map[string]
 	}
 	for i := 0; i < typeV.NumField(); i++ {
 
-		tag := typeV.Field(i).Tag.Get(struct_tag)
+		tag := typeV.Field(i).Tag.Get(struct_tag) //struct_tag is per default http
 		if tag == "-" {
 			continue
 		}
@@ -49,50 +66,51 @@ func FillInterfaceFromRequest(u interface{}, r *http.Request, ignore map[string]
 			}
 		}
 
-    formvalue := r.PostFormValue(tag)
+        formvalue := r.PostFormValue(tag)
 		if len(formvalue) == 0 {
 			continue
 		}
 
 		field := s.Field(i)
-    switch  (field.Type().Kind()) {
-      case  reflect.String: {
-        field.SetString(formvalue)
-      }
-      case  reflect.Bool: {
-        v, err := strconv.ParseBool(formvalue)
-        if err == nil {
-          field.SetBool(v)
-        } else {
-					fmt.Println(err.Error())
-				}
-      }
-      case  reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64: {
-        v, err:= strconv.ParseInt(formvalue, 10, 64)
-        if err == nil {
-          field.SetInt(v)
-        } else {
-					fmt.Println(err.Error())
-				}
-      }
-      case  reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64: {
-        v, err:= strconv.ParseUint(formvalue, 10, 64)
-        if err == nil {
-          field.SetUint(v)
-        } else {
-					fmt.Println(err.Error())
-				}
-      }
-      case  reflect.Float32, reflect.Float64: {
-        v, err:= strconv.ParseFloat(formvalue, 64)
-        if err == nil {
-          field.SetFloat(v)
-        } else {
-					fmt.Println(err.Error())
-				}
-      }
-      default: continue
-    }
+
+        switch  (field.Type().Kind()) {
+          case  reflect.String: {
+            field.SetString(formvalue)
+          }
+          case  reflect.Bool: {
+            v, err := strconv.ParseBool(formvalue)
+            if err == nil {
+              field.SetBool(v)
+            } else {
+    					fmt.Println(err.Error())
+    				}
+          }
+          case  reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64: {
+            v, err:= strconv.ParseInt(formvalue, 10, 64)
+            if err == nil {
+              field.SetInt(v)
+            } else {
+    					fmt.Println(err.Error())
+    				}
+          }
+          case  reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64: {
+            v, err:= strconv.ParseUint(formvalue, 10, 64)
+            if err == nil {
+              field.SetUint(v)
+            } else {
+    					fmt.Println(err.Error())
+    				}
+          }
+          case  reflect.Float32, reflect.Float64: {
+            v, err:= strconv.ParseFloat(formvalue, 64)
+            if err == nil {
+              field.SetFloat(v)
+            } else {
+    					fmt.Println(err.Error())
+    				}
+          }
+          default: continue
+        }
   }
 
 }
